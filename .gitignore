@@ -2,13 +2,19 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/master/Unity.gitignore
 #
-/[Ll]ibrary/
-/[Tt]emp/
-/[Oo]bj/
-/[Bb]uild/
-/[Bb]uilds/
-/[Ll]ogs/
-/[Mm]emoryCaptures/
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+[Ll]ogs/
+
+UnityVS/
+UnityVS.meta
+Thumbs.db
+Thumbs.db.meta
 
 # Asset meta data should only be ignored when the corresponding asset is also ignored
 !/[Aa]ssets/**/*.meta
@@ -52,9 +58,19 @@ ExportedObj/
 sysinfo.txt
 
 # Builds
-*.apk
 *.unitypackage
 
 # Crashlytics generated file
 crashlytics-build.properties
 
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+#x64/
+#x86/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
