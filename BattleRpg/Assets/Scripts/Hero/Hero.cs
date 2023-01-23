@@ -18,10 +18,10 @@ namespace BattleRpg.Hero
         private Material selectedMaterial;
         [SerializeField]
         private Material unselectedMaterial;
-        [SerializeField]
-        private Camera mainCamera;
 
         private IHeroAttributes heroAttributes;
+
+        public bool Selected { get { return selected; } }
         private bool selected = false;
 
         private void Awake()
@@ -59,33 +59,6 @@ namespace BattleRpg.Hero
 
         private void Update()
         {
-            if (Input.GetButtonDown("Fire1"))
-            {
-                // Try a raycast from screenpoint to check whether we hit anything.
-                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                // If we did hit something, check which collider we hit.
-                if (Physics.Raycast(ray, out hit))
-                {
-
-                    // If the collider name is the correct one, toggle animation speed.
-                    if (hit.collider.name == heroType.ToString())
-                    {
-                        if (!selected)
-                        {
-                            this.GetComponent<Renderer>().material = selectedMaterial;
-                            selected = true;
-                        }
-                        else
-                        {
-                            this.GetComponent<Renderer>().material = unselectedMaterial;
-                            selected = false;
-                        }
-                    }
-                }
-            }
-
             if (selected)
             {
                 this.transform.localScale = Vector3.Lerp (this.transform.localScale, maxScale, Time.deltaTime * 10);
@@ -134,6 +107,20 @@ namespace BattleRpg.Hero
         public void AddExperiencePoints(int value)
         {
             heroAttributes.ExperiencePoints = heroAttributes.ExperiencePoints + value;
+        }
+
+        public void UpdateSelectedState(bool updateSelected)
+        {
+            if (updateSelected)
+            {
+                this.GetComponent<Renderer>().material = selectedMaterial;
+                selected = true;
+            }
+            else
+            {
+                this.GetComponent<Renderer>().material = unselectedMaterial;
+                selected = false;
+            }
         }
     }
 }
