@@ -73,6 +73,8 @@ namespace BattleRpg.Hero
                     heroAttributes.Level
                 ));
 
+                this.GetComponent<Renderer>().material = unselectedMaterial;
+
                 return;
             }
             else
@@ -149,7 +151,7 @@ namespace BattleRpg.Hero
             SetupHero(new HeroDataModel { ExperiencePoints = heroAttributes.ExperiencePoints, Unlocked = heroAttributes.Unlocked });
 
             string heroDataString = JsonUtility.ToJson(new HeroDataModel { ExperiencePoints = heroAttributes.ExperiencePoints, Unlocked = heroAttributes.Unlocked });
-            PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);            
+            PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);       
         }
     }
 }
