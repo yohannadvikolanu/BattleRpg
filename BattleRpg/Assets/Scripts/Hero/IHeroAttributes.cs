@@ -8,7 +8,7 @@ namespace BattleRpg.Hero
     public interface IHeroAttributes : ICharacterAttributes
     {
         /// <summary>
-        /// The Name of the hero.
+        /// The HeroType of the hero.
         /// </summary>
         HeroType HeroType { get; }
         
@@ -16,5 +16,10 @@ namespace BattleRpg.Hero
         /// The accumulated experience points for the hero.
         /// </summary>
         int ExperiencePoints { get; set; }
+
+        /// <summary>
+        /// Defines whether the hero has been unlocked for the player.
+        /// </summary>
+        bool Unlocked { get; set; }
     }
 }

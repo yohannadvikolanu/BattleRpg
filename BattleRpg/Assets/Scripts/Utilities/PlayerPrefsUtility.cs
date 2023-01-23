@@ -1,3 +1,4 @@
+using BattleRpg.Hero;
 using UnityEditor;
 using UnityEngine;
 
@@ -11,13 +12,13 @@ namespace BattleRpg.Utilities
             PlayerPrefs.DeleteAll();
         }
 
-        static void SaveAndSetInventory(string key, string value)
+        public static void SetAndSaveInventoryHero(string key, string value)
         {
             PlayerPrefs.SetString(key, value);
             PlayerPrefs.Save();
         }
 
-        static string GetString(string key)
+        public static string GetInventoryHero(string key)
         {
             return PlayerPrefs.GetString(key);
         }

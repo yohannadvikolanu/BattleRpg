@@ -1,3 +1,4 @@
+using BattleRpg.Utilities;
 using UnityEngine;
 
 namespace BattleRpg.Hero
@@ -16,17 +17,35 @@ namespace BattleRpg.Hero
 
         private void Awake()
         {
-            int currentExp = 0;
-            // TODO : Check if character exists in storage and load exp.
+            HeroDataModel heroData;
+            string heroDataString = PlayerPrefsUtility.GetInventoryHero(heroType.ToString());
 
-            int level = (currentExp / LevelMetric);
-            float health = BaseHealth + (BaseHealth * level * LevelUpPercentage);
+            if (heroDataString == "")
+            {
+                Debug.Log("Hero did not exist in inventory, creating one.");
+                heroData = new HeroDataModel { ExperiencePoints = 0, Unlocked = false };
+                heroDataString = JsonUtility.ToJson(heroData);
+                PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);
+            }
+            else
+            {
+                heroData = JsonUtility.FromJson<HeroDataModel>(heroDataString);
+            }
 
-            float attackPower = BaseAttackPower + (BaseAttackPower * level * LevelUpPercentage);
+            int level = 0;
+            float health = 0.0f;
+            float attackPower = 0.0f;
 
-            heroAttributes = new HeroAttributes(heroType, health, attackPower, currentExp, level);
+            if (heroData.Unlocked)
+            {
+                level = (heroData.ExperiencePoints / LevelMetric);
+                health = BaseHealth + (BaseHealth * level * LevelUpPercentage);
+                attackPower = BaseAttackPower + (BaseAttackPower * level * LevelUpPercentage);
+            }
 
-            Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}", heroType, health, attackPower, currentExp, level));
+            heroAttributes = new HeroAttributes(heroType, health, attackPower, heroData.ExperiencePoints, level, heroData.Unlocked);
+
+            Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}", heroType, health, attackPower, heroData.ExperiencePoints, level));
         }
 
         public string GetHeroName()
