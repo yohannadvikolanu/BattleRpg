@@ -63,7 +63,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 1683f837cfbe6fc4dbc43611d4ded584, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -111,3 +111,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heroType: 5
+  selectedMaterial: {fileID: 2100000, guid: bf850b721d64f024bbeb38252afc94b0, type: 2}
+  unselectedMaterial: {fileID: 2100000, guid: 1683f837cfbe6fc4dbc43611d4ded584, type: 2}
+  mainCamera: {fileID: 0}

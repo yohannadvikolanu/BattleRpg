@@ -9,11 +9,20 @@ namespace BattleRpg.Hero
         private const float BaseAttackPower = 10;
         private const int LevelMetric = 5;
         private const float LevelUpPercentage = 0.1f;
+        private Vector3 maxScale = new Vector3(1.2f, 1.2f, 1.2f);
+        private Vector3 minScale = new Vector3(0.7f, 0.7f, 0.7f);
 
         [SerializeField]
         private HeroType heroType;
+        [SerializeField]
+        private Material selectedMaterial;
+        [SerializeField]
+        private Material unselectedMaterial;
+        [SerializeField]
+        private Camera mainCamera;
 
         private IHeroAttributes heroAttributes;
+        private bool selected = false;
 
         private void Awake()
         {
@@ -46,6 +55,45 @@ namespace BattleRpg.Hero
             heroAttributes = new HeroAttributes(heroType, health, attackPower, heroData.ExperiencePoints, level, heroData.Unlocked);
 
             Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}", heroType, health, attackPower, heroData.ExperiencePoints, level));
+        }
+
+        private void Update()
+        {
+            if (Input.GetButtonDown("Fire1"))
+            {
+                // Try a raycast from screenpoint to check whether we hit anything.
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                // If we did hit something, check which collider we hit.
+                if (Physics.Raycast(ray, out hit))
+                {
+
+                    // If the collider name is the correct one, toggle animation speed.
+                    if (hit.collider.name == heroType.ToString())
+                    {
+                        if (!selected)
+                        {
+                            this.GetComponent<Renderer>().material = selectedMaterial;
+                            selected = true;
+                        }
+                        else
+                        {
+                            this.GetComponent<Renderer>().material = unselectedMaterial;
+                            selected = false;
+                        }
+                    }
+                }
+            }
+
+            if (selected)
+            {
+                this.transform.localScale = Vector3.Lerp (this.transform.localScale, maxScale, Time.deltaTime * 10);
+            }
+            else
+            {
+                this.transform.localScale = Vector3.Lerp (this.transform.localScale, minScale, Time.deltaTime * 10);
+            }
         }
 
         public string GetHeroName()

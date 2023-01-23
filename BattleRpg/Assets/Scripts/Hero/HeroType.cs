@@ -11,6 +11,6 @@ namespace BattleRpg.Hero
         Capsuley,
         Cylinderey,
         Pillarey,
-        Rectangley,
+        Tabletey,
     }
 }
