@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
+using BattleRpg.Hero;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BattleRpg.Menu
 {
@@ -12,7 +14,11 @@ namespace BattleRpg.Menu
         [SerializeField]
         private List<Hero.Hero> heroList = new List<Hero.Hero>();
 
-        // Update is called once per frame
+        [SerializeField]
+        private Button startBattle = null;
+
+        private List<HeroType> selectedHeroes = new List<HeroType>();
+
         private void Update()
         {
             if (Input.GetButtonDown("Fire1"))
@@ -28,20 +34,32 @@ namespace BattleRpg.Menu
 
                     if (hero != null)
                     {
-                        List<Hero.Hero> list = heroList.Where(selectedHero => selectedHero.Selected).ToList();
-
                         if (hero.Selected)
                         {
                             hero.UpdateSelectedState(false);
+                            selectedHeroes.Remove(hero.GetHeroType());
                         }
                         else
                         {
-                            if (list.Count < 3)
+                            if (selectedHeroes.Count < 3)
                             {
                                 hero.UpdateSelectedState(true);
+                                selectedHeroes.Add(hero.GetHeroType());
                             }
                         }
                     }
+                }
+            }
+
+            if (selectedHeroes.Count == 3 && !startBattle.interactable)
+            {
+                startBattle.interactable = true;
+            }
+            else
+            {
+                if (startBattle.interactable)
+                {
+                    startBattle.interactable = false;
                 }
             }
         }
