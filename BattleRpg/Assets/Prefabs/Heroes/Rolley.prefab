@@ -113,4 +113,4 @@ MonoBehaviour:
   heroType: 5
   selectedMaterial: {fileID: 2100000, guid: bf850b721d64f024bbeb38252afc94b0, type: 2}
   unselectedMaterial: {fileID: 2100000, guid: 1683f837cfbe6fc4dbc43611d4ded584, type: 2}
-  mainCamera: {fileID: 0}
+  lockedMaterial: {fileID: 2100000, guid: 05ff47b8df827a14bb95631c841774f5, type: 2}

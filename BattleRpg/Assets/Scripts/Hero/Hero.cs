@@ -18,6 +18,8 @@ namespace BattleRpg.Hero
         private Material selectedMaterial;
         [SerializeField]
         private Material unselectedMaterial;
+        [SerializeField]
+        private Material lockedMaterial;
 
         private IHeroAttributes heroAttributes;
 
@@ -26,47 +28,60 @@ namespace BattleRpg.Hero
 
         private void Awake()
         {
-            HeroDataModel heroData;
+            heroAttributes = new HeroAttributes(heroType);
             string heroDataString = PlayerPrefsUtility.GetInventoryHero(heroType.ToString());
 
             if (heroDataString == "")
             {
                 Debug.Log("Hero did not exist in inventory, creating one.");
-                heroData = new HeroDataModel { ExperiencePoints = 0, Unlocked = false };
-                heroDataString = JsonUtility.ToJson(heroData);
+                heroDataString = JsonUtility.ToJson(new HeroDataModel { ExperiencePoints = 0, Unlocked = false });
                 PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);
             }
-            else
-            {
-                heroData = JsonUtility.FromJson<HeroDataModel>(heroDataString);
-            }
 
-            int level = 0;
-            float health = 0.0f;
-            float attackPower = 0.0f;
-
-            if (heroData.Unlocked)
-            {
-                level = (heroData.ExperiencePoints / LevelMetric);
-                health = BaseHealth + (BaseHealth * level * LevelUpPercentage);
-                attackPower = BaseAttackPower + (BaseAttackPower * level * LevelUpPercentage);
-            }
-
-            heroAttributes = new HeroAttributes(heroType, health, attackPower, heroData.ExperiencePoints, level, heroData.Unlocked);
-
-            Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}", heroType, health, attackPower, heroData.ExperiencePoints, level));
+            SetupHero(JsonUtility.FromJson<HeroDataModel>(heroDataString));
         }
 
         private void Update()
         {
-            if (selected)
+            if (heroAttributes.Unlocked)
             {
-                this.transform.localScale = Vector3.Lerp (this.transform.localScale, maxScale, Time.deltaTime * 10);
+                if (selected)
+                {
+                    this.transform.localScale = Vector3.Lerp(this.transform.localScale, maxScale, Time.deltaTime * 10);
+                }
+                else
+                {
+                    this.transform.localScale = Vector3.Lerp(this.transform.localScale, minScale, Time.deltaTime * 10);
+                }
+            }
+        }
+
+        private void SetupHero(HeroDataModel heroData)
+        {
+            if (heroAttributes.Unlocked)
+            {
+                heroAttributes.ExperiencePoints = heroData.ExperiencePoints;
+                heroAttributes.Level = (heroData.ExperiencePoints / LevelMetric);
+                heroAttributes.Health = BaseHealth + (BaseHealth * heroAttributes.Level * LevelUpPercentage);
+                heroAttributes.AttackPower = BaseAttackPower + (BaseAttackPower * heroAttributes.Level * LevelUpPercentage);
+
+                Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}", 
+                    heroAttributes.HeroType,
+                    heroAttributes.Health,
+                    heroAttributes.AttackPower,
+                    heroData.ExperiencePoints,
+                    heroAttributes.Level
+                ));
+
+                return;
             }
             else
             {
-                this.transform.localScale = Vector3.Lerp (this.transform.localScale, minScale, Time.deltaTime * 10);
+                this.GetComponent<Renderer>().material = lockedMaterial;
             }
+
+
+            Debug.Log(string.Format("Character {0} has not yet been unlocked.", heroAttributes.HeroType.ToString()));
         }
 
         public string GetHeroName()
@@ -121,6 +136,20 @@ namespace BattleRpg.Hero
                 this.GetComponent<Renderer>().material = unselectedMaterial;
                 selected = false;
             }
+        }
+
+        public bool IsUnlocked()
+        {
+            return heroAttributes.Unlocked;
+        }
+
+        public void UnlockHero()
+        {
+            heroAttributes.Unlocked = true;
+            SetupHero(new HeroDataModel { ExperiencePoints = heroAttributes.ExperiencePoints, Unlocked = heroAttributes.Unlocked });
+
+            string heroDataString = JsonUtility.ToJson(new HeroDataModel { ExperiencePoints = heroAttributes.ExperiencePoints, Unlocked = heroAttributes.Unlocked });
+            PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);            
         }
     }
 }

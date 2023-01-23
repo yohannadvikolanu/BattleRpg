@@ -13,11 +13,11 @@ namespace BattleRpg.Character
         /// <summary>
         /// The current attack power attribute of the character.
         /// </summary>
-        float AttackPower { get; }
+        float AttackPower { get; set; }
 
         /// <summary>
         /// The current level attribute of the character.
         /// </summary>
-        int Level { get; }
+        int Level { get; set; }
     }
 }

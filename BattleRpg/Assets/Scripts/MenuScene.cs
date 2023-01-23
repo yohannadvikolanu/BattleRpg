@@ -32,7 +32,7 @@ namespace BattleRpg.Menu
                 {
                     Hero.Hero hero = heroList.First(item => item.GetHeroName() == hit.collider.name);
 
-                    if (hero != null)
+                    if (hero != null && hero.IsUnlocked())
                     {
                         if (hero.Selected)
                         {

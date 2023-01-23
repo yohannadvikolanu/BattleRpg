@@ -16,14 +16,17 @@ namespace BattleRpg.Enemy
         private void Awake()
         {
             // TODO: Calculate level by using average of all 3 characters and their exp.
-            int level = (averageHeroExp / LevelMetric);
-            float health = BaseHealth + (BaseHealth * level * LevelUpPercentage);
+            enemyAttributes = new EnemyAttributes();
 
-            float attackPower = BaseAttackPower + (BaseAttackPower * level * LevelUpPercentage);
+            enemyAttributes.Level = (averageHeroExp / LevelMetric);
+            enemyAttributes.Health = BaseHealth + (BaseHealth * enemyAttributes.Level * LevelUpPercentage);
+            enemyAttributes.AttackPower = BaseAttackPower + (BaseAttackPower * enemyAttributes.Level * LevelUpPercentage);
 
-            enemyAttributes = new EnemyAttributes(health, attackPower, level);
-
-            Debug.Log(string.Format("Character loaded with attributes - Health: {0} Attack Power: {1} Level: {2}", health, attackPower, level));
+            Debug.Log(string.Format("Character loaded with attributes - Health: {0} Attack Power: {1} Level: {2}", 
+                enemyAttributes.Health,
+                enemyAttributes.AttackPower,
+                enemyAttributes.Level
+            ));
         }
     }
 }
