@@ -17,7 +17,7 @@ namespace BattleRpg.Character
         }
 
         /// <inheritdoc/>
-        public float Health { get; }
+        public float Health { get; set; }
 
         /// <inheritdoc/>
         public float AttackPower { get; }
