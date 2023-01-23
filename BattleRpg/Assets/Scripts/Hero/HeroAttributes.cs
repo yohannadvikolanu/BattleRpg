@@ -1,9 +1,7 @@
-using BattleRpg.Character;
-
 namespace BattleRpg.Hero
 {
     /// <inheritdoc/>
-    internal sealed class HeroAttributes : IHeroAttributes, ICharacterAttributes
+    internal sealed class HeroAttributes : IHeroAttributes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Hero"/> class.
@@ -13,9 +11,9 @@ namespace BattleRpg.Hero
         /// <param name="health">The value for the total health of the hero.</param>
         /// <param name="attackPower">The value for the total attack power of the hero.</param>
         /// <param name="level">The value for the level of the hero.</param>
-        public HeroAttributes(string name, float health, float attackPower, int experiencePoints, int level)
+        public HeroAttributes(HeroType heroType, float health, float attackPower, int experiencePoints, int level)
         {
-            Name = name;
+            HeroType = heroType;
             Health = health;
             AttackPower = attackPower;
             ExperiencePoints = experiencePoints;
@@ -23,13 +21,13 @@ namespace BattleRpg.Hero
         }
 
         /// <inheritdoc/>
-        public string Name { get; }
+        public HeroType HeroType { get; }
 
         /// <inheritdoc/>
-        public int ExperiencePoints { get; }
+        public int ExperiencePoints { get; set; }
 
         /// <inheritdoc/>
-        public float Health { get; }
+        public float Health { get; set; }
 
         /// <inheritdoc/>
         public float AttackPower { get; }

@@ -2,7 +2,7 @@ using BattleRpg.Character;
 
 namespace BattleRpg.Enemy
 {
-    internal sealed class EnemyAttributes : IEnemyAttributes, ICharacterAttributes
+    internal sealed class EnemyAttributes : IEnemyAttributes
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Enemy"/> class.
@@ -18,7 +18,7 @@ namespace BattleRpg.Enemy
         }
 
         /// <inheritdoc/>
-        public float Health { get; }
+        public float Health { get; set; }
 
         /// <inheritdoc/>
         public float AttackPower { get; }
