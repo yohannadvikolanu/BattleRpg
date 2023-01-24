@@ -5,7 +5,7 @@ using BattleRpg.Hero;
 using BattleRpg.Utilities;
 using UnityEngine;
 
-namespace BattleRpg.Player.Inventory
+namespace BattleRpg.Player
 {
     public class PlayerInventory : MonoBehaviour
     {

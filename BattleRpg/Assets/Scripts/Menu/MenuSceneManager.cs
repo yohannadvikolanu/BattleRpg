@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using BattleRpg.Hero;
-using BattleRpg.Player.Manager;
+using BattleRpg.Player;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
