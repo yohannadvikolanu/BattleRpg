@@ -1,18 +1,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using BattleRpg.Hero;
+using BattleRpg.Player.Manager;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 namespace BattleRpg.Menu
 {
-    public class MenuScene : MonoBehaviour
+    public class MenuSceneManager : MonoBehaviour
     {
         private const float HoldTimeThreshold = 2.0f;
 
         [SerializeField]
-        private Camera mainCamera;
+        private PlayerManager playerManager = null;
+
+        [SerializeField]
+        private Camera mainCamera = null;
 
         [SerializeField]
         private List<Hero.Hero> heroList = new List<Hero.Hero>();
