@@ -17,10 +17,8 @@ namespace BattleRpg.Utilities
         {
             string battlesCompletedString = GetInventoryItem("BattlesCompleted");
             int battlesCompleted = Int32.Parse(battlesCompletedString);
-            Debug.Log(string.Format("Battles Completed so far: {0}", battlesCompleted));
-
             battlesCompleted += 5;
-
+            Debug.Log(string.Format("Battles Completed so far: {0}", battlesCompleted));
             PlayerPrefsUtility.SetAndSaveInventoryItem("BattlesCompleted", battlesCompleted.ToString());
         }
 
