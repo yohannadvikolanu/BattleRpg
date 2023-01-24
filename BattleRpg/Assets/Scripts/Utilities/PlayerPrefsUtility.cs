@@ -1,4 +1,4 @@
-using BattleRpg.Hero;
+using System;
 using UnityEditor;
 using UnityEngine;
 
@@ -12,15 +12,27 @@ namespace BattleRpg.Utilities
             PlayerPrefs.DeleteAll();
         }
 
-        public static void SetAndSaveInventoryHero(string key, string value)
+        [MenuItem("Utilities/Add 5 Battles")]
+        static void Add5Battles()
+        {
+            string battlesCompletedString = GetInventoryItem("BattlesCompleted");
+            int battlesCompleted = Int32.Parse(battlesCompletedString);
+            Debug.Log(string.Format("Battles Completed so far: {0}", battlesCompleted));
+
+            battlesCompleted += 5;
+
+            PlayerPrefsUtility.SetAndSaveInventoryItem("BattlesCompleted", battlesCompleted.ToString());
+        }
+
+        public static string GetInventoryItem(string key)
+        {
+            return PlayerPrefs.GetString(key);
+        }
+
+        public static void SetAndSaveInventoryItem(string key, string value)
         {
             PlayerPrefs.SetString(key, value);
             PlayerPrefs.Save();
-        }
-
-        public static string GetInventoryHero(string key)
-        {
-            return PlayerPrefs.GetString(key);
         }
     }
 }

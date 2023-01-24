@@ -29,13 +29,13 @@ namespace BattleRpg.Hero
         private void Awake()
         {
             heroAttributes = new HeroAttributes(heroType);
-            string heroDataString = PlayerPrefsUtility.GetInventoryHero(heroType.ToString());
+            string heroDataString = PlayerPrefsUtility.GetInventoryItem(heroType.ToString());
 
             if (heroDataString == "")
             {
                 Debug.Log("Hero did not exist in inventory, creating one.");
                 heroDataString = JsonUtility.ToJson(new HeroDataModel { ExperiencePoints = 0, Unlocked = false });
-                PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);
+                PlayerPrefsUtility.SetAndSaveInventoryItem(heroType.ToString(), heroDataString);
             }
 
             SetupHero(JsonUtility.FromJson<HeroDataModel>(heroDataString));
@@ -58,8 +58,9 @@ namespace BattleRpg.Hero
 
         private void SetupHero(HeroDataModel heroData)
         {
-            if (heroAttributes.Unlocked)
+            if (heroData.Unlocked)
             {
+                heroAttributes.Unlocked = heroData.Unlocked;
                 heroAttributes.ExperiencePoints = heroData.ExperiencePoints;
                 heroAttributes.Level = (heroData.ExperiencePoints / LevelMetric);
                 heroAttributes.Health = BaseHealth + (BaseHealth * heroAttributes.Level * LevelUpPercentage);
@@ -151,7 +152,7 @@ namespace BattleRpg.Hero
             SetupHero(new HeroDataModel { ExperiencePoints = heroAttributes.ExperiencePoints, Unlocked = heroAttributes.Unlocked });
 
             string heroDataString = JsonUtility.ToJson(new HeroDataModel { ExperiencePoints = heroAttributes.ExperiencePoints, Unlocked = heroAttributes.Unlocked });
-            PlayerPrefsUtility.SetAndSaveInventoryHero(heroType.ToString(), heroDataString);       
+            PlayerPrefsUtility.SetAndSaveInventoryItem(heroType.ToString(), heroDataString);
         }
     }
 }

@@ -1,8 +1,11 @@
+using System;
+
 namespace BattleRpg.Hero
 {
+    [Serializable]
     public struct HeroDataModel
     {
-        public int ExperiencePoints { get; set; }
-        public bool Unlocked { get; set; }
+        public int ExperiencePoints;
+        public bool Unlocked;
     }
 }
