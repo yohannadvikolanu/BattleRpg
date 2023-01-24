@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
-using BattleRpg.Hero;
 using BattleRpg.Player;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 namespace BattleRpg.Menu
 {
@@ -22,7 +22,7 @@ namespace BattleRpg.Menu
         private List<Hero.Hero> heroList = new List<Hero.Hero>();
 
         [SerializeField]
-        private Button startBattle = null;
+        private Button startBattleButton = null;
         [SerializeField]
         private Button statsPanel = null;
         [SerializeField]
@@ -34,18 +34,23 @@ namespace BattleRpg.Menu
         [SerializeField]
         private TMP_Text experiencePointsText = null;
 
-        private List<HeroType> selectedHeroes = new List<HeroType>();
+        [SerializeField]
+        private string battleSceneName;
+
+        private List<Hero.Hero> selectedHeroes = new List<Hero.Hero>();
         private Hero.Hero currentlyPressedHero;
         private float holdTime = 0.0f;
 
         private void OnEnable()
         {
             statsPanel.onClick.AddListener(DismissStatsPanel);
+            startBattleButton.onClick.AddListener(OnStartBattleButtonClicked);
         }
 
         private void OnDisable()
         {
             statsPanel.onClick.RemoveListener(DismissStatsPanel);
+            startBattleButton.onClick.RemoveListener(OnStartBattleButtonClicked);
         }
 
         private void Update()
@@ -84,14 +89,14 @@ namespace BattleRpg.Menu
                         if (currentlyPressedHero.Selected)
                         {
                             currentlyPressedHero.UpdateSelectedState(false);
-                            selectedHeroes.Remove(currentlyPressedHero.GetHeroType());
+                            selectedHeroes.Remove(currentlyPressedHero);
                         }
                         else
                         {
                             if (selectedHeroes.Count < 3)
                             {
                                 currentlyPressedHero.UpdateSelectedState(true);
-                                selectedHeroes.Add(currentlyPressedHero.GetHeroType());
+                                selectedHeroes.Add(currentlyPressedHero);
                             }
                         }
                     }
@@ -101,15 +106,15 @@ namespace BattleRpg.Menu
                 currentlyPressedHero = null;
             }
 
-            if (selectedHeroes.Count == 3 && !startBattle.interactable)
+            if (selectedHeroes.Count == 3 && !startBattleButton.interactable)
             {
-                startBattle.interactable = true;
+                startBattleButton.interactable = true;
             }
             else
             {
-                if (startBattle.interactable)
+                if (startBattleButton.interactable)
                 {
-                    startBattle.interactable = false;
+                    startBattleButton.interactable = false;
                 }
             }
         }
@@ -121,6 +126,12 @@ namespace BattleRpg.Menu
             attackPowerText.text = hero.GetCurrentAttackPower().ToString();
             experiencePointsText.text = hero.GetCurrentExperiencePoints().ToString();
             statsPanel.gameObject.SetActive(true);
+        }
+
+        private void OnStartBattleButtonClicked()
+        {
+            playerManager.SetHeroListAndStartBattle(selectedHeroes);
+            SceneManager.LoadSceneAsync(battleSceneName);
         }
 
         public void DismissStatsPanel()
