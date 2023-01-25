@@ -8,10 +8,15 @@ using TMPro;
 
 namespace BattleRpg.Menu
 {
+    /// <summary>
+    /// Represents the class that manages the menu scene.
+    /// </summary>
     public class MenuSceneManager : MonoBehaviour
     {
+        // Const variables.
         private const float HoldTimeThreshold = 2.0f;
 
+        // In-Editor reference variables.
         [SerializeField]
         private Camera mainCamera = null;
 
@@ -31,6 +36,7 @@ namespace BattleRpg.Menu
         [SerializeField]
         private TMP_Text experiencePointsText = null;
 
+        // Private variables.
         private List<HeroType> selectedHeroes = new List<HeroType>();
         private Hero.Hero currentlyPressedHero;
         private float holdTime = 0.0f;
@@ -54,6 +60,7 @@ namespace BattleRpg.Menu
 
         private void Update()
         {
+            // Logic to handle Long Press occurences.
             if (currentlyPressedHero != null)
             {
                 holdTime += Time.deltaTime;
@@ -64,6 +71,7 @@ namespace BattleRpg.Menu
                 }
             }
 
+            // Selecting a hero based on the raycast.
             if (Input.GetButtonDown("Fire1"))
             {
                 if (currentlyPressedHero == null && !statsPanel.gameObject.activeSelf)
@@ -79,6 +87,8 @@ namespace BattleRpg.Menu
                     }
                 }
             }
+
+            // Checking whether this was a long press.
             if (Input.GetButtonUp("Fire1"))
             {
                 if (holdTime <= HoldTimeThreshold)
@@ -105,6 +115,7 @@ namespace BattleRpg.Menu
                 currentlyPressedHero = null;
             }
 
+            // Updating UI based on selected number of heroes.
             if (selectedHeroes.Count == 3 && !startBattleButton.interactable)
             {
                 startBattleButton.interactable = true;
@@ -116,6 +127,10 @@ namespace BattleRpg.Menu
             }
         }
 
+        /// <summary>
+        /// Opens the pop-up with the specific hero stats.
+        /// </summary>
+        /// <param name="hero">The hero we need to display stats for.</param>
         private void HandleLongPress(Hero.Hero hero)
         {
             nameText.text = hero.GetHeroName();
@@ -125,16 +140,25 @@ namespace BattleRpg.Menu
             statsPanel.gameObject.SetActive(true);
         }
 
+        /// <summary>
+        /// Triggers a start battle when the button is pressed.
+        /// </summary>
         private void OnStartBattleButtonClicked()
         {
             PlayerManager.Instance.SetHeroListAndStartBattle(selectedHeroes);
         }
 
+        /// <summary>
+        /// Hides the stats panel.
+        /// </summary>
         private void DismissStatsPanel()
         {
             statsPanel.gameObject.SetActive(false);
         }
 
+        /// <summary>
+        /// Sets up the menu scene based on the inventory.
+        /// </summary>
         private void SetupScene()
         {
             for (int i = 0; i < heroList.Count; i++)
