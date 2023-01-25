@@ -7,12 +7,18 @@ namespace BattleRpg.Editor.Menu
 {
     public class PlayerPrefsMenu
     {
+        /// <summary>
+        /// Utility method to clear player prefs from the editor menus.
+        /// </summary>
         [MenuItem("Utilities/Delete All Player Prefs")]
         static void DeleteAllPlayerPrefs()
         {
             PlayerPrefs.DeleteAll();
         }
 
+        /// <summary>
+        /// Utility method to add 5 battles to the player's inventory, to make testing quicker.
+        /// </summary>
         [MenuItem("Utilities/Add 5 Battles")]
         static void Add5Battles()
         {

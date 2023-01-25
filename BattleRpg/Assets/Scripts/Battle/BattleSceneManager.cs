@@ -7,16 +7,20 @@ using TMPro;
 
 namespace BattleRpg.Battle
 {
+    /// <summary>
+    /// Represents the class that manages the battle scene.
+    /// </summary>
     public class BattleSceneManager : MonoBehaviour
     {
+        // Const variables.
         private const string PlayerTurnText = "YOUR TURN";
         private const string EnemyTurnText = "ENEMY'S TURN";
 
+        // In-Editor reference variables.
         [SerializeField]
         private Camera mainCamera = null;
         [SerializeField]
         private List<GameObject> heroPrefabs = new List<GameObject>();
-
         [SerializeField]
         private GameObject enemyPrefab = null;
 
@@ -40,6 +44,7 @@ namespace BattleRpg.Battle
         [SerializeField]
         private TMP_Text turnText = null;
 
+        // Private variables.
         private List<Hero.Hero> alivebattleHeroes = new List<Hero.Hero>();
         private List<Hero.Hero> deadBattleHeroes = new List<Hero.Hero>();
         private Enemy.Enemy battleEnemy = null;
@@ -72,6 +77,7 @@ namespace BattleRpg.Battle
 
         private void Start()
         {
+            // Setting up scene for battle.
             SetupHeroes();
             SetupEnemy();
             isPlayerTurn = true;
@@ -81,6 +87,7 @@ namespace BattleRpg.Battle
 
         private void Update()
         {
+            // Making sure the battle hasn't ended.
             if (!battleEndUi.activeSelf)
             {
                 // Player attack logic starts here
@@ -93,6 +100,8 @@ namespace BattleRpg.Battle
                     // If we did hit something, check which collider we hit.
                     if (Physics.Raycast(ray, out hit))
                     {
+                        // Selecting the correct hero as the "current hero"
+                        // And setting up the required variables to perform the attack animation
                         currentHero = alivebattleHeroes.First(item => item.GetHeroName() == hit.collider.name);
                         currentHeroOriginalPosition = currentHero.transform.position;
                         heroAttackReferencePosition = battleEnemy.transform.position + (Vector3.left * 2);
@@ -100,56 +109,69 @@ namespace BattleRpg.Battle
                     }
                 }
 
+                // Hero attack animation logic tree
                 if (isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position != heroAttackReferencePosition)
                 {
+                    // Move the current hero the attack position
                     PerformAnimation(currentHero.transform, heroAttackReferencePosition);
                 }
                 else if (isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position == heroAttackReferencePosition)
                 {
+                    // Once move is done, perform the attack
                     PerformHeroAttack();
                 }
                 else if (!isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position != currentHeroOriginalPosition)
                 {
+                    // Return the current hero to the original position
                     PerformAnimation(currentHero.transform, currentHeroOriginalPosition);
                 }
                 else if (!isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position == currentHeroOriginalPosition)
                 {
+                    // Complete player turn and start enemy turn
                     isPlayerMoving = false;
                     isEnemyTurn = true;
                     turnText.text = EnemyTurnText;
                 }
 
 
-                // Enemy move logic starts here
+                // Enemy attack animation logic tree
                 if (isEnemyTurn && !isEnemyMoving && targetHero == null)
                 {
+                    // If it's the enemy's turn, set up required variables if they haven't been already
                     targetHero = alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)];
                     enemyAttackReferencePosition = targetHero.transform.position + (Vector3.right * 2);
                     isEnemyMoving = true;
                 }
                 else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position != enemyAttackReferencePosition)
                 {
+                    // Move the enemy to the attack position
                     PerformAnimation(battleEnemy.transform, enemyAttackReferencePosition);
                 }
                 else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position == enemyAttackReferencePosition)
                 {
+                    // Perform the attack logic on the selected hero
                     PerformEnemyAttack();
                     isEnemyTurn = false;
                 }
                 else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position != enemyPrefabReferencePosition.position)
                 {
+                    // Return the enemy back to it's original position
                     PerformAnimation(battleEnemy.transform, enemyPrefabReferencePosition.position);
                 }
                 else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position == enemyPrefabReferencePosition.position)
                 {
+                    // Complete the enemy turn and start player turn
                     isEnemyMoving = false;
                     isPlayerTurn = true;
                     turnText.text = PlayerTurnText;
                 }
             }
 
+            // Checking if we have alive heroes
             if (alivebattleHeroes.Count > 0)
             {
+                // Checking whether the alive heroes are actually still alive
+                // If not, set them to the death state
                 for (int i = 0; i < alivebattleHeroes.Count; i++)
                 {
                     if(alivebattleHeroes[i].GetCurrentHealth() <= 0.0f)
@@ -162,8 +184,10 @@ namespace BattleRpg.Battle
                 }
             }
 
+            // Checking if the enemy is dead and battle is still active
             if (battleEnemy.GetCurrentHealth() <= 0.0f && !battleEndUi.activeSelf)
             {
+                // Set the battle complete state
                 battleStatusText.text = "YOU WON!";
                 battleEndUi.SetActive(true);
                 turnUi.SetActive(true);
@@ -171,14 +195,19 @@ namespace BattleRpg.Battle
                 battleEnemy.SetDeathState();
             }
 
+            // Checking if don't have any more alive heroes
             if (alivebattleHeroes.Count == 0)
             {
+                // Set the battle complete state
                 battleStatusText.text = "YOU LOST!";
                 battleEndUi.SetActive(true);
                 turnUi.SetActive(false);
             }
         }
 
+        /// <summary>
+        /// Sets up the selected heroes for battle.
+        /// </summary>
         private void SetupHeroes()
         {
             for (int i = 0; i < PlayerManager.Instance.BattleHeroList.Count; i++)
@@ -196,6 +225,9 @@ namespace BattleRpg.Battle
             }
         }
 
+        /// <summary>
+        /// Sets up the enemy object.
+        /// </summary>
         private void SetupEnemy()
         {
             int totalExperiencePoints = 0;
@@ -230,25 +262,40 @@ namespace BattleRpg.Battle
             }
         }
 
+        /// <summary>
+        /// Peform an attack for the current hero.
+        /// </summary>
         private void PerformHeroAttack()
         {
             battleEnemy.DecreaseHealth(currentHero.GetCurrentAttackPower());
             isPlayerTurn = false;
         }
 
+        /// <summary>
+        /// Perform an attack for the enemy.
+        /// </summary>
         private void PerformEnemyAttack()
         {
             targetHero.DecreaseHealth(battleEnemy.GetCurrentAttackPower());
             targetHero = null;
         }
 
+        /// <summary>
+        /// Used for animating the hero and enemy objects around the battle scene for visual depiction of the battle.
+        /// </summary>
+        /// <param name="lerpObject">The object to lerp.</param>
+        /// <param name="targetPosition">The target to lerp to.</param>
         private void PerformAnimation(Transform lerpObject, Vector3 targetPosition)
         {
             lerpObject.position = Vector3.Lerp(lerpObject.position, targetPosition, Time.deltaTime * 10);
         }
 
+        /// <summary>
+        /// Peforms required logic at the end of a battle and transitions back to the menu scene.
+        /// </summary>
         private void EndBattle()
         {
+            // If it was a win, add an experience point to each alive hero.
             if (isWin)
             {
                 alivebattleHeroes.ForEach(item => PlayerInventory.Instance.AddExperiencePoint(item.GetHeroType()));
