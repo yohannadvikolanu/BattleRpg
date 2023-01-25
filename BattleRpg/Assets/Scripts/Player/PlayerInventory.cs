@@ -9,13 +9,30 @@ namespace BattleRpg.Player
 {
     public class PlayerInventory : MonoBehaviour
     {
+        private static PlayerInventory instance;
+
+        public static PlayerInventory Instance { get { return instance; } }
+
         [SerializeField]
         private List<HeroType> heroList = new List<HeroType>();
 
         public List<HeroType> unlockedList = new List<HeroType>();
 
+        private void Awake()
+        {
+            if (instance != null && instance != this)
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                instance = this;
+            }
+        }
+
         public void UpdateInventory()
         {
+            unlockedList.Clear();
             heroList.ForEach(item =>
             {
                 string itemString = PlayerPrefsUtility.GetInventoryItem(item.ToString());

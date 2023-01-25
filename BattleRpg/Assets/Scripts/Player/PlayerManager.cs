@@ -13,13 +13,12 @@ namespace BattleRpg.Player
     {
         private const string BattlesCompletedKey = "BattlesCompleted";
         private static PlayerManager instance;
-
         public static PlayerManager Instance { get { return instance; } }
 
         [SerializeField]
-        private PlayerInventory playerInventory;
-        [SerializeField]
         private string battleSceneName;
+        [SerializeField]
+        private string menuSceneName;
 
         public List<HeroType> BattleHeroList { get { return battleHeroList; } }
         private List<HeroType> battleHeroList;
@@ -37,13 +36,11 @@ namespace BattleRpg.Player
             {
                 instance = this;
             }
-
-            playerInventory.UpdateInventory();
         }
 
-        private void Start()
+        private void OnEnable()
         {
-            SetupMenuScene();
+            PlayerInventory.Instance.UpdateInventory();
         }
 
         public void SetHeroListAndStartBattle(List<HeroType> heroList)
@@ -67,28 +64,23 @@ namespace BattleRpg.Player
                 battlesCompleted += 1;
                 Debug.Log(string.Format("Battles Completed so far: {0}", battlesCompleted));
 
-                battleHeroList.ForEach(item => playerInventory.AddExperiencePoint(item));
-
                 PlayerPrefsUtility.SetAndSaveInventoryItem("BattlesCompleted", battlesCompleted.ToString());
 
-                if (battlesCompleted % 5 == 0 && playerInventory.unlockedList.Count < 10)
+                if (battlesCompleted % 5 == 0 && PlayerInventory.Instance.unlockedList.Count < 10)
                 {
                     int requiredUnlockedHeroes = (battlesCompleted / 5) + 3;
 
                     Debug.Log("Required battles completed, unlocking new hero.");
 
-                    if (playerInventory.unlockedList.Count < requiredUnlockedHeroes)
+                    if (PlayerInventory.Instance.unlockedList.Count < requiredUnlockedHeroes)
                     {
-                        playerInventory.UnlockHero();
+                        PlayerInventory.Instance.UnlockHero();
                     }
                 }
             }
-        }
 
-        private void SetupMenuScene()
-        {
-            menuSceneManager = GameObject.FindObjectsOfType<MenuSceneManager>().FirstOrDefault();
-            menuSceneManager.SetupScene(playerInventory.unlockedList);
+            SceneManager.LoadSceneAsync(menuSceneName);
+            PlayerInventory.Instance.UpdateInventory();
         }
     }
 }

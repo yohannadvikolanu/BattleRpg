@@ -33,10 +33,12 @@ namespace BattleRpg.Battle
         [SerializeField]
         private TMP_Text battleStatusText = null;
 
-        private List<Hero.Hero> battleHeroes = new List<Hero.Hero>();
+        private List<Hero.Hero> alivebattleHeroes = new List<Hero.Hero>();
+        private List<Hero.Hero> deadBattleHeroes = new List<Hero.Hero>();
         private Enemy.Enemy battleEnemy = null;
 
         private bool isEnemyTurn = false;
+        private bool isWin = false;
 
         private void Awake()
         {
@@ -70,7 +72,7 @@ namespace BattleRpg.Battle
                 // If we did hit something, check which collider we hit.
                 if (Physics.Raycast(ray, out hit))
                 {
-                    Hero.Hero currentHero = battleHeroes.First(item => item.GetHeroName() == hit.collider.name);
+                    Hero.Hero currentHero = alivebattleHeroes.First(item => item.GetHeroName() == hit.collider.name);
                     PerformHeroAttack(currentHero);
                     isEnemyTurn = true;
                 }
@@ -85,22 +87,24 @@ namespace BattleRpg.Battle
             {
                 battleStatusText.text = "YOU WON!";
                 battleEndUi.SetActive(true);
+                isWin = true;
             }
 
-            if (battleHeroes.Count > 0)
+            if (alivebattleHeroes.Count > 0)
             {
-                for (int i = 0; i < battleHeroes.Count; i++)
+                for (int i = 0; i < alivebattleHeroes.Count; i++)
                 {
-                    if(battleHeroes[i].GetCurrentHealth() <= 0.0f)
+                    if(alivebattleHeroes[i].GetCurrentHealth() <= 0.0f)
                     {
-                        battleHeroes[i].SetDeathState();
-                        battleHeroes.Remove(battleHeroes[i]);
+                        alivebattleHeroes[i].SetDeathState();
+                        deadBattleHeroes.Add(alivebattleHeroes[i]);
+                        alivebattleHeroes.Remove(alivebattleHeroes[i]);
                         return;
                     }
                 }
             }
 
-            if (battleHeroes.Count == 0)
+            if (alivebattleHeroes.Count == 0)
             {
                 battleStatusText.text = "YOU LOST!";
                 battleEndUi.SetActive(true);
@@ -118,7 +122,7 @@ namespace BattleRpg.Battle
                         Hero.Hero newHero = Instantiate(item, PrefabPosition(i), Quaternion.identity).GetComponent<Hero.Hero>();
                         newHero.SetupHero(true);
                         newHero.name = newHero.GetHeroName();
-                        battleHeroes.Add(newHero);
+                        alivebattleHeroes.Add(newHero);
                     }
                 });
             }
@@ -128,12 +132,12 @@ namespace BattleRpg.Battle
         {
             int totalExperiencePoints = 0;
 
-            for (int i = 0; i < battleHeroes.Count; i++)
+            for (int i = 0; i < alivebattleHeroes.Count; i++)
             {
-                totalExperiencePoints += battleHeroes[i].GetCurrentExperiencePoints();
+                totalExperiencePoints += alivebattleHeroes[i].GetCurrentExperiencePoints();
             }
 
-            totalExperiencePoints = totalExperiencePoints / battleHeroes.Count;
+            totalExperiencePoints = totalExperiencePoints / alivebattleHeroes.Count;
 
             Enemy.Enemy newEnemy = Instantiate(enemyPrefab, enemyPrefabReferencePosition.position, Quaternion.identity).GetComponent<Enemy.Enemy>();
             newEnemy.SetupEnemy(totalExperiencePoints);
@@ -165,13 +169,18 @@ namespace BattleRpg.Battle
 
         private void PerformEnemyAttack()
         {
-            battleHeroes[UnityEngine.Random.Range(0, battleHeroes.Count)].DecreaseHealth(battleEnemy.GetCurrentAttackPower());
+            alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)].DecreaseHealth(battleEnemy.GetCurrentAttackPower());
             isEnemyTurn = false;
         }
 
         private void EndBattle()
         {
-            // TODO : Add logic to go back to the main scene
+            if (isWin)
+            {
+                alivebattleHeroes.ForEach(item => PlayerInventory.Instance.AddExperiencePoint(item.GetHeroType()));
+            }
+
+            PlayerManager.Instance.BattleCompleted();
         }
     }
 }

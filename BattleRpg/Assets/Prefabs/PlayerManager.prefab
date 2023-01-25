@@ -47,6 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerInventory: {fileID: 742776181470044234}
   battleSceneName: Battle
+  menuSceneName: Menu
 --- !u!114 &742776181470044234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -60,3 +61,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   heroList: 00000000010000000200000003000000040000000500000006000000070000000800000009000000
+  unlockedList: 

@@ -117,11 +117,6 @@ namespace BattleRpg.Hero
             return heroAttributes.Level;
         }
 
-        public void AddExperiencePoints(int value)
-        {
-            heroAttributes.ExperiencePoints = heroAttributes.ExperiencePoints + value;
-        }
-
         public void UpdateSelectedState(bool updateSelected)
         {
             if (updateSelected)

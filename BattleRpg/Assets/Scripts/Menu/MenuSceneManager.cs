@@ -35,6 +35,11 @@ namespace BattleRpg.Menu
         private Hero.Hero currentlyPressedHero;
         private float holdTime = 0.0f;
 
+        private void Start()
+        {
+            SetupScene();
+        }
+
         private void OnEnable()
         {
             statsPanel.onClick.AddListener(DismissStatsPanel);
@@ -104,12 +109,10 @@ namespace BattleRpg.Menu
             {
                 startBattleButton.interactable = true;
             }
-            else
+            
+            if (selectedHeroes.Count < 3 && startBattleButton.interactable)
             {
-                if (startBattleButton.interactable)
-                {
-                    startBattleButton.interactable = false;
-                }
+                startBattleButton.interactable = false;
             }
         }
 
@@ -132,11 +135,11 @@ namespace BattleRpg.Menu
             statsPanel.gameObject.SetActive(false);
         }
 
-        public void SetupScene(List<HeroType> unlockedHeroes)
+        private void SetupScene()
         {
             for (int i = 0; i < heroList.Count; i++)
             {
-                unlockedHeroes.ForEach(item =>
+                PlayerInventory.Instance.unlockedList.ForEach(item =>
                 {
                     if (item == heroList[i].GetHeroType())
                     {
