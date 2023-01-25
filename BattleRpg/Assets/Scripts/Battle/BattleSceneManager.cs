@@ -4,12 +4,14 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
-using System.Collections;
 
 namespace BattleRpg.Battle
 {
     public class BattleSceneManager : MonoBehaviour
     {
+        private const string PlayerTurnText = "YOUR TURN";
+        private const string EnemyTurnText = "ENEMY'S TURN";
+
         [SerializeField]
         private Camera mainCamera = null;
         [SerializeField]
@@ -33,14 +35,24 @@ namespace BattleRpg.Battle
         private Button battleEndPopup = null;
         [SerializeField]
         private TMP_Text battleStatusText = null;
+        [SerializeField]
+        private GameObject turnUi = null;
+        [SerializeField]
+        private TMP_Text turnText = null;
 
         private List<Hero.Hero> alivebattleHeroes = new List<Hero.Hero>();
         private List<Hero.Hero> deadBattleHeroes = new List<Hero.Hero>();
         private Enemy.Enemy battleEnemy = null;
         private Hero.Hero targetHero = null;
+        private Hero.Hero currentHero = null;
+        private Vector3 currentHeroOriginalPosition;
+        private Vector3 enemyAttackReferencePosition;
+        private Vector3 heroAttackReferencePosition;
 
         private bool isEnemyTurn = false;
         private bool isEnemyMoving = false;
+        private bool isPlayerTurn = false;
+        private bool isPlayerMoving = false;
         private bool isWin = false;
 
         private void Awake()
@@ -62,53 +74,78 @@ namespace BattleRpg.Battle
         {
             SetupHeroes();
             SetupEnemy();
+            isPlayerTurn = true;
+            turnUi.SetActive(true);
+            turnText.text = PlayerTurnText;
         }
 
         private void Update()
         {
-            if (Input.GetButtonDown("Fire1") && !isEnemyTurn && !isEnemyMoving)
+            if (!battleEndUi.activeSelf)
             {
-                // Try a raycast from screenpoint to check whether we hit anything.
-                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                // If we did hit something, check which collider we hit.
-                if (Physics.Raycast(ray, out hit))
+                // Player attack logic starts here
+                if (Input.GetButtonDown("Fire1") && !isEnemyTurn && !isEnemyMoving)
                 {
-                    Hero.Hero currentHero = alivebattleHeroes.First(item => item.GetHeroName() == hit.collider.name);
-                    PerformHeroAttack(currentHero);
-                    isEnemyTurn = true;
+                    // Try a raycast from screenpoint to check whether we hit anything.
+                    Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                    RaycastHit hit;
+
+                    // If we did hit something, check which collider we hit.
+                    if (Physics.Raycast(ray, out hit))
+                    {
+                        currentHero = alivebattleHeroes.First(item => item.GetHeroName() == hit.collider.name);
+                        currentHeroOriginalPosition = currentHero.transform.position;
+                        heroAttackReferencePosition = battleEnemy.transform.position + (Vector3.left * 2);
+                        isPlayerMoving = true;
+                    }
                 }
-            }
 
-            if (isEnemyTurn && !isEnemyMoving && targetHero == null)
-            {
-                targetHero = alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)];
-                isEnemyMoving = true;
-            }
-            else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position != targetHero.transform.position)
-            {
-                PerformAnimation(battleEnemy.transform, targetHero.transform.position);
-            }
-            else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position == targetHero.transform.position)
-            {
-                PerformEnemyAttack();
-                isEnemyTurn = false;
-            }
-            else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position != enemyPrefabReferencePosition.position)
-            {
-                PerformAnimation(battleEnemy.transform, enemyPrefabReferencePosition.position);
-            }
-            else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position == enemyPrefabReferencePosition.position)
-            {
-                isEnemyMoving = false;
-            }
+                if (isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position != heroAttackReferencePosition)
+                {
+                    PerformAnimation(currentHero.transform, heroAttackReferencePosition);
+                }
+                else if (isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position == heroAttackReferencePosition)
+                {
+                    PerformHeroAttack();
+                }
+                else if (!isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position != currentHeroOriginalPosition)
+                {
+                    PerformAnimation(currentHero.transform, currentHeroOriginalPosition);
+                }
+                else if (!isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position == currentHeroOriginalPosition)
+                {
+                    isPlayerMoving = false;
+                    isEnemyTurn = true;
+                    turnText.text = EnemyTurnText;
+                }
 
-            if (battleEnemy.GetCurrentHealth() <= 0.0f && !battleEndUi.activeSelf)
-            {
-                battleStatusText.text = "YOU WON!";
-                battleEndUi.SetActive(true);
-                isWin = true;
+
+                // Enemy move logic starts here
+                if (isEnemyTurn && !isEnemyMoving && targetHero == null)
+                {
+                    targetHero = alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)];
+                    enemyAttackReferencePosition = targetHero.transform.position + (Vector3.right * 2);
+                    isEnemyMoving = true;
+                }
+                else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position != enemyAttackReferencePosition)
+                {
+                    PerformAnimation(battleEnemy.transform, enemyAttackReferencePosition);
+                }
+                else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position == enemyAttackReferencePosition)
+                {
+                    PerformEnemyAttack();
+                    isEnemyTurn = false;
+                }
+                else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position != enemyPrefabReferencePosition.position)
+                {
+                    PerformAnimation(battleEnemy.transform, enemyPrefabReferencePosition.position);
+                }
+                else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position == enemyPrefabReferencePosition.position)
+                {
+                    isEnemyMoving = false;
+                    isPlayerTurn = true;
+                    turnText.text = PlayerTurnText;
+                }
             }
 
             if (alivebattleHeroes.Count > 0)
@@ -125,10 +162,20 @@ namespace BattleRpg.Battle
                 }
             }
 
+            if (battleEnemy.GetCurrentHealth() <= 0.0f && !battleEndUi.activeSelf)
+            {
+                battleStatusText.text = "YOU WON!";
+                battleEndUi.SetActive(true);
+                turnUi.SetActive(true);
+                isWin = true;
+                battleEnemy.SetDeathState();
+            }
+
             if (alivebattleHeroes.Count == 0)
             {
                 battleStatusText.text = "YOU LOST!";
                 battleEndUi.SetActive(true);
+                turnUi.SetActive(false);
             }
         }
 
@@ -183,9 +230,10 @@ namespace BattleRpg.Battle
             }
         }
 
-        private void PerformHeroAttack(Hero.Hero currentHero)
+        private void PerformHeroAttack()
         {
             battleEnemy.DecreaseHealth(currentHero.GetCurrentAttackPower());
+            isPlayerTurn = false;
         }
 
         private void PerformEnemyAttack()

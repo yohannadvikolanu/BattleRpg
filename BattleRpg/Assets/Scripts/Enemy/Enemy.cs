@@ -5,6 +5,9 @@ namespace BattleRpg.Enemy
 {
     public class Enemy : MonoBehaviour
     {
+        [SerializeField]
+        private Material lockedMaterial = null;
+
         private const float BaseHealth = 100;
         private const float BaseAttackPower = 7.5f;
         private const int LevelMetric = 3;
@@ -13,12 +16,15 @@ namespace BattleRpg.Enemy
         private IEnemyAttributes enemyAttributes;
         private GameObject enemyUiCanvas;
         private Slider healthBar;
+        private Renderer enemyRenderer = null;
 
         private void Awake()
         {
             healthBar = GetComponentInChildren<Slider>();
             enemyUiCanvas = GetComponentInChildren<Canvas>().gameObject;
             enemyUiCanvas.SetActive(false);
+
+            enemyRenderer = gameObject.GetComponent<Renderer>();
         }
 
         public void SetupEnemy(int averageHeroExp)
@@ -55,6 +61,11 @@ namespace BattleRpg.Enemy
             Debug.Log("Enemy health decreased by" + value);
             Debug.Log("The health is now at " + enemyAttributes.Health);
             healthBar.value -= value / 100;
+        }
+
+        public void SetDeathState()
+        {
+            enemyRenderer.material = lockedMaterial;   
         }
     }
 }
