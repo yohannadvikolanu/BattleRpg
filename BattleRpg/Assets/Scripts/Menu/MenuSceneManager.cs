@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using BattleRpg.Player;
+using BattleRpg.Hero;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.SceneManagement;
 
 namespace BattleRpg.Menu
 {
@@ -34,10 +34,7 @@ namespace BattleRpg.Menu
         [SerializeField]
         private TMP_Text experiencePointsText = null;
 
-        [SerializeField]
-        private string battleSceneName;
-
-        private List<Hero.Hero> selectedHeroes = new List<Hero.Hero>();
+        private List<HeroType> selectedHeroes = new List<HeroType>();
         private Hero.Hero currentlyPressedHero;
         private float holdTime = 0.0f;
 
@@ -84,19 +81,19 @@ namespace BattleRpg.Menu
             {
                 if (holdTime <= HoldTimeThreshold)
                 {
-                    if (currentlyPressedHero != null && currentlyPressedHero.IsUnlocked())
+                    if (currentlyPressedHero != null)
                     {
                         if (currentlyPressedHero.Selected)
                         {
                             currentlyPressedHero.UpdateSelectedState(false);
-                            selectedHeroes.Remove(currentlyPressedHero);
+                            selectedHeroes.Remove(currentlyPressedHero.GetHeroType());
                         }
                         else
                         {
                             if (selectedHeroes.Count < 3)
                             {
                                 currentlyPressedHero.UpdateSelectedState(true);
-                                selectedHeroes.Add(currentlyPressedHero);
+                                selectedHeroes.Add(currentlyPressedHero.GetHeroType());
                             }
                         }
                     }
@@ -131,12 +128,25 @@ namespace BattleRpg.Menu
         private void OnStartBattleButtonClicked()
         {
             playerManager.SetHeroListAndStartBattle(selectedHeroes);
-            SceneManager.LoadSceneAsync(battleSceneName);
         }
 
-        public void DismissStatsPanel()
+        private void DismissStatsPanel()
         {
             statsPanel.gameObject.SetActive(false);
+        }
+
+        public void SetupScene(List<HeroType> unlockedHeroes)
+        {
+            for (int i = 0; i < heroList.Count; i++)
+            {
+                unlockedHeroes.ForEach(item =>
+                {
+                    if (item == heroList[i].GetHeroType())
+                    {
+                        heroList[i].SetUnlockedState();
+                    }
+                });
+            }
         }
     }
 }

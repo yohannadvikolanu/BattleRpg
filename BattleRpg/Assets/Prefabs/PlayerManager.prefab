@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3140925258798336564}
   - component: {fileID: 3933206491673218152}
-  - component: {fileID: 1825938491682892810}
+  - component: {fileID: 742776181470044234}
   m_Layer: 0
   m_Name: PlayerManager
   m_TagString: Untagged
@@ -45,7 +45,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f84270c0f2f1b04390b399fc97d4c38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1825938491682892810
+  playerInventory: {fileID: 742776181470044234}
+  battleSceneName: Battle
+--- !u!114 &742776181470044234
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -57,4 +59,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1f1bc3a61adbd164ca94d2e9036f8cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroList: []
+  heroList: 00000000010000000200000003000000040000000500000006000000070000000800000009000000

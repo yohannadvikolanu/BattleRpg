@@ -2,15 +2,15 @@ namespace BattleRpg.Hero
 {
     public enum HeroType
     {
-        Cubey,
-        Dicey,
-        Boxey,
-        Spherey,
         Blobby,
-        Rolley,
+        Boxey,
         Capsuley,
+        Cubey,
         Cylinderey,
+        Dicey,
         Pillarey,
+        Rolley,
+        Spherey,
         Tabletey,
     }
 }

@@ -9,53 +9,51 @@ namespace BattleRpg.Player
 {
     public class PlayerInventory : MonoBehaviour
     {
-        private const string BattlesCompletedKey = "BattlesCompleted";
-
         [SerializeField]
-        private List<Hero.Hero> heroList = new List<Hero.Hero>();
+        private List<HeroType> heroList = new List<HeroType>();
 
-        private void Start()
+        public List<HeroType> unlockedList = new List<HeroType>();
+
+        public void UpdateInventory()
         {
-            List<Hero.Hero> unlockedList = heroList.Where(item => item.IsUnlocked()).ToList();
-            List<Hero.Hero> lockedList = heroList.Where(item => !item.IsUnlocked()).ToList();
+            heroList.ForEach(item =>
+            {
+                string itemString = PlayerPrefsUtility.GetInventoryItem(item.ToString());
+
+                if (itemString != "")
+                {
+                    unlockedList.Add(item);
+                }
+            });
 
             if (unlockedList.Count < 3)
             {
-                Debug.Log("No heroes unlocked in inventory. Unlocking 3 random ones.");
+                 Debug.Log("No heroes unlocked in inventory. Unlocking 3 random ones.");
                 for (int i = 0; i < 3; i++)
                 {
-                    Hero.Hero item = lockedList.ElementAt(UnityEngine.Random.Range(0, lockedList.Count));
-                    item.UnlockHero();
-                    lockedList.Remove(item);
-                }
-            }
-
-            string battlesCompletedString = PlayerPrefsUtility.GetInventoryItem(BattlesCompletedKey);
-            
-            if (battlesCompletedString == "")
-            {
-                Debug.Log("Battles Completed inventory item did not exist, creating one.");
-                PlayerPrefsUtility.SetAndSaveInventoryItem(BattlesCompletedKey, "0");
-            }
-            else
-            {
-                int battlesCompleted = Int32.Parse(battlesCompletedString);
-
-                if (battlesCompleted % 5 == 0)
-                {
-                    int requiredUnlockedHeroes = (battlesCompleted / 5) + 3;
-
-                    if (unlockedList.Count < requiredUnlockedHeroes)
-                    {
-                        lockedList.ElementAt(UnityEngine.Random.Range(0, lockedList.Count)).UnlockHero();
-                    }
+                    UnlockHero();
                 }
             }
         }
 
-        public Hero.Hero GetHeroType(HeroType heroType)
+        public void UnlockHero()
         {
-            return heroList.First(item => item.GetHeroType() == heroType);
+            HeroType heroType;
+            do
+            {
+                heroType = heroList.ElementAt(UnityEngine.Random.Range(0, heroList.Count));
+            } while (unlockedList.Any(item => item == heroType));
+
+            PlayerPrefsUtility.SetAndSaveInventoryItem(heroType.ToString(), "0");
+            unlockedList.Add(heroType);
+            Debug.Log(string.Format("Unlocked hero: {0}", heroType));
+        }
+
+        public void AddExperiencePoint(HeroType heroType)
+        {
+            string currentExperiencePoints = PlayerPrefsUtility.GetInventoryItem(heroType.ToString());
+            int updatedExperiencePoints = Int32.Parse(currentExperiencePoints) + 1;
+            PlayerPrefsUtility.SetAndSaveInventoryItem(heroType.ToString(), updatedExperiencePoints.ToString());
         }
     }
 }

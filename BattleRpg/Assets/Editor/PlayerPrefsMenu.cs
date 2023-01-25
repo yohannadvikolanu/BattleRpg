@@ -17,9 +17,19 @@ namespace BattleRpg.Editor.Menu
         static void Add5Battles()
         {
             string battlesCompletedString = PlayerPrefsUtility.GetInventoryItem("BattlesCompleted");
-            int battlesCompleted = Int32.Parse(battlesCompletedString);
+            int battlesCompleted = 0;
+
+            if (battlesCompletedString != "")
+            {
+                battlesCompleted = Int32.Parse(battlesCompletedString);
+            }
+            else
+            {
+                Debug.Log("Battles Completed inventory item did not exist, creating one.");
+            }
             battlesCompleted += 5;
             Debug.Log(string.Format("Battles Completed so far: {0}", battlesCompleted));
+            
             PlayerPrefsUtility.SetAndSaveInventoryItem("BattlesCompleted", battlesCompleted.ToString());
         }
     }

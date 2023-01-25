@@ -22,8 +22,5 @@ namespace BattleRpg.Hero
 
         /// <inheritdoc/>
         public int Level { get; set; }
-
-        /// <inheritdoc/>
-        public bool Unlocked { get; set; }
     }
 }

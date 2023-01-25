@@ -110,7 +110,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2636b379ea4a044aab3121a353098da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  heroType: 3
+  heroType: 8
   selectedMaterial: {fileID: 2100000, guid: f993d316a2459ae47bac3d8e99695f03, type: 2}
   unselectedMaterial: {fileID: 2100000, guid: 92c4b3fe8ed6b33429460da093e385ce, type: 2}
   lockedMaterial: {fileID: 2100000, guid: 05ff47b8df827a14bb95631c841774f5, type: 2}
+  heroRenderer: {fileID: 7299127852449859163}
