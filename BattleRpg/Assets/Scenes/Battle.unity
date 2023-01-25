@@ -572,6 +572,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: acd41a35b93ab584397e3724ea5e4fdc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  mainCamera: {fileID: 1305204381}
   heroPrefabs:
   - {fileID: 7019087358896262825, guid: ebfe053f568961b46a5915c5bd2f13be, type: 3}
   - {fileID: 4335536295806738628, guid: cbc97ba6b38188d49bc63d97af240934, type: 3}

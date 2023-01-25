@@ -1,6 +1,7 @@
 using System;
 using BattleRpg.Utilities;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BattleRpg.Hero
 {
@@ -25,17 +26,23 @@ namespace BattleRpg.Hero
         private Renderer heroRenderer = null;
         private Collider heroCollider = null;
         private IHeroAttributes heroAttributes;
+        private GameObject heroUiCanvas;
+        private Slider healthBar;
 
         public bool Selected { get { return selected; } }
         private bool selected = false;
 
         private void Awake()
         {
+            healthBar = GetComponentInChildren<Slider>();
             heroRenderer = gameObject.GetComponent<Renderer>();
             heroRenderer.material = lockedMaterial;
 
             heroCollider = gameObject.GetComponent<Collider>();
             heroCollider.enabled = false;
+
+            heroUiCanvas = GetComponentInChildren<Canvas>().gameObject;
+            heroUiCanvas.SetActive(false);
         }
 
         private void Update()
@@ -74,6 +81,9 @@ namespace BattleRpg.Hero
             if (isForBattle)
             {
                 heroRenderer.material = selectedMaterial;
+                heroCollider.enabled = true;
+                heroUiCanvas.SetActive(true);
+                healthBar.value = 1.0f;
             }
         }
 
@@ -132,6 +142,14 @@ namespace BattleRpg.Hero
             heroCollider.enabled = true;
 
             SetupHero(false);
+        }
+
+        public void DecreaseHealth(float value)
+        {
+            heroAttributes.Health -= value;
+            Debug.Log("Hero health decreased by" + value);
+            Debug.Log("The health is now at " + heroAttributes.Health);
+            healthBar.value -= value / 100;
         }
     }
 }

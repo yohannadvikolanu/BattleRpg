@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace BattleRpg.Enemy
 {
@@ -10,6 +11,15 @@ namespace BattleRpg.Enemy
         private const float LevelUpPercentage = 0.1f;
 
         private IEnemyAttributes enemyAttributes;
+        private GameObject enemyUiCanvas;
+        private Slider healthBar;
+
+        private void Awake()
+        {
+            healthBar = GetComponentInChildren<Slider>();
+            enemyUiCanvas = GetComponentInChildren<Canvas>().gameObject;
+            enemyUiCanvas.SetActive(false);
+        }
 
         public void SetupEnemy(int averageHeroExp)
         {
@@ -24,6 +34,22 @@ namespace BattleRpg.Enemy
                 enemyAttributes.AttackPower,
                 enemyAttributes.Level
             ));
+
+            enemyUiCanvas.SetActive(true);
+            healthBar.value = 1.0f;
+        }
+
+        public float GetCurrentAttackPower()
+        {
+            return enemyAttributes.AttackPower;
+        }
+
+        public void DecreaseHealth(float value)
+        {
+            enemyAttributes.Health -= value;
+            Debug.Log("Enemy health decreased by" + value);
+            Debug.Log("The health is now at " + enemyAttributes.Health);
+            healthBar.value -= value / 100;
         }
     }
 }

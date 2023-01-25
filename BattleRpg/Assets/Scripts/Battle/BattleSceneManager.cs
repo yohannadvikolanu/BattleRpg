@@ -1,11 +1,14 @@
 using System.Collections.Generic;
 using BattleRpg.Player;
 using UnityEngine;
+using System.Linq;
 
 namespace BattleRpg.Battle
 {
     public class BattleSceneManager : MonoBehaviour
     {
+        [SerializeField]
+        private Camera mainCamera = null;
         [SerializeField]
         private List<GameObject> heroPrefabs = new List<GameObject>();
 
@@ -24,10 +27,35 @@ namespace BattleRpg.Battle
         private List<Hero.Hero> battleHeroes = new List<Hero.Hero>();
         private Enemy.Enemy battleEnemy = null;
 
+        private bool isEnemyTurn = false;
+
         private void Start()
         {
             SetupHeroes();
             SetupEnemy();
+        }
+
+        private void Update()
+        {
+            if (Input.GetButtonDown("Fire1") && !isEnemyTurn)
+            {
+                // Try a raycast from screenpoint to check whether we hit anything.
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+
+                // If we did hit something, check which collider we hit.
+                if (Physics.Raycast(ray, out hit))
+                {
+                    Hero.Hero currentHero = battleHeroes.First(item => item.GetHeroName() == hit.collider.name);
+                    PerformHeroAttack(currentHero);
+                    isEnemyTurn = true;
+                }
+            }
+
+            if (isEnemyTurn)
+            {
+                PerformEnemyAttack();
+            }
         }
 
         private void SetupHeroes()
@@ -40,6 +68,7 @@ namespace BattleRpg.Battle
                     {
                         Hero.Hero newHero = Instantiate(item, PrefabPosition(i), Quaternion.identity).GetComponent<Hero.Hero>();
                         newHero.SetupHero(true);
+                        newHero.name = newHero.GetHeroName();
                         battleHeroes.Add(newHero);
                     }
                 });
@@ -78,6 +107,17 @@ namespace BattleRpg.Battle
                 default:
                     return Vector3.zero;
             }
+        }
+
+        private void PerformHeroAttack(Hero.Hero currentHero)
+        {
+            battleEnemy.DecreaseHealth(currentHero.GetCurrentAttackPower());
+        }
+
+        private void PerformEnemyAttack()
+        {
+            battleHeroes[UnityEngine.Random.Range(0, battleHeroes.Count)].DecreaseHealth(battleEnemy.GetCurrentAttackPower());
+            isEnemyTurn = false;
         }
     }
 }
