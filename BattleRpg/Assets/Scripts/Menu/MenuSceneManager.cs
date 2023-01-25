@@ -13,9 +13,6 @@ namespace BattleRpg.Menu
         private const float HoldTimeThreshold = 2.0f;
 
         [SerializeField]
-        private PlayerManager playerManager = null;
-
-        [SerializeField]
         private Camera mainCamera = null;
 
         [SerializeField]
@@ -127,7 +124,7 @@ namespace BattleRpg.Menu
 
         private void OnStartBattleButtonClicked()
         {
-            playerManager.SetHeroListAndStartBattle(selectedHeroes);
+            PlayerManager.Instance.SetHeroListAndStartBattle(selectedHeroes);
         }
 
         private void DismissStatsPanel()

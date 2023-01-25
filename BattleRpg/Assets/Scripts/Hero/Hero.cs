@@ -53,7 +53,7 @@ namespace BattleRpg.Hero
             }
         }
 
-        public void SetupHero()
+        public void SetupHero(bool isForBattle)
         {
             heroAttributes = new HeroAttributes();
             string experiencePointsString = PlayerPrefsUtility.GetInventoryItem(heroType.ToString());
@@ -63,13 +63,18 @@ namespace BattleRpg.Hero
             heroAttributes.Health = BaseHealth + (BaseHealth * heroAttributes.Level * LevelUpPercentage);
             heroAttributes.AttackPower = BaseAttackPower + (BaseAttackPower * heroAttributes.Level * LevelUpPercentage);
 
-            Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}",
+            Debug.Log(string.Format("Hero loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}",
                 heroType,
                 heroAttributes.Health,
                 heroAttributes.AttackPower,
                 heroAttributes.ExperiencePoints,
                 heroAttributes.Level
             ));
+
+            if (isForBattle)
+            {
+                heroRenderer.material = selectedMaterial;
+            }
         }
 
         public string GetHeroName()
@@ -126,7 +131,7 @@ namespace BattleRpg.Hero
             heroRenderer.material = unselectedMaterial;
             heroCollider.enabled = true;
 
-            SetupHero();
+            SetupHero(false);
         }
     }
 }

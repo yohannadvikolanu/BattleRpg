@@ -12,12 +12,16 @@ namespace BattleRpg.Player
     public class PlayerManager : MonoBehaviour
     {
         private const string BattlesCompletedKey = "BattlesCompleted";
+        private static PlayerManager instance;
+
+        public static PlayerManager Instance { get { return instance; } }
 
         [SerializeField]
         private PlayerInventory playerInventory;
         [SerializeField]
         private string battleSceneName;
 
+        public List<HeroType> BattleHeroList { get { return battleHeroList; } }
         private List<HeroType> battleHeroList;
 
         private MenuSceneManager menuSceneManager;
@@ -25,6 +29,15 @@ namespace BattleRpg.Player
         private void Awake()
         {
             DontDestroyOnLoad(this.gameObject);
+            if (instance != null && instance != this)
+            {
+                Destroy(this.gameObject);
+            }
+            else
+            {
+                instance = this;
+            }
+
             playerInventory.UpdateInventory();
         }
 
