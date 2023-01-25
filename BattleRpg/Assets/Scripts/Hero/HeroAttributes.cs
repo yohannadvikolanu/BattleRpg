@@ -3,14 +3,6 @@ namespace BattleRpg.Hero
     /// <inheritdoc/>
     internal sealed class HeroAttributes : IHeroAttributes
     {
-        public HeroAttributes(HeroType heroType)
-        {
-            HeroType = heroType;
-        }
-
-        /// <inheritdoc/>
-        public HeroType HeroType { get; }
-
         /// <inheritdoc/>
         public int ExperiencePoints { get; set; }
 

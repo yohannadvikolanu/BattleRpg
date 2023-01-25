@@ -1,3 +1,4 @@
+using System;
 using BattleRpg.Utilities;
 using UnityEngine;
 
@@ -52,20 +53,23 @@ namespace BattleRpg.Hero
             }
         }
 
-        public void SetupHero(IHeroAttributes attributes)
+        public void SetupHero()
         {
-            // heroAttributes.ExperiencePoints = attributes.ExperiencePoints;
-            // heroAttributes.Level = (attributes.ExperiencePoints / LevelMetric);
-            // heroAttributes.Health = BaseHealth + (BaseHealth * heroAttributes.Level * LevelUpPercentage);
-            // heroAttributes.AttackPower = BaseAttackPower + (BaseAttackPower * heroAttributes.Level * LevelUpPercentage);
+            heroAttributes = new HeroAttributes();
+            string experiencePointsString = PlayerPrefsUtility.GetInventoryItem(heroType.ToString());
 
-            // Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}", 
-            //     heroAttributes.HeroType,
-            //     heroAttributes.Health,
-            //     heroAttributes.AttackPower,
-            //     heroAttributes.ExperiencePoints,
-            //     heroAttributes.Level
-            // ));
+            heroAttributes.ExperiencePoints = Int32.Parse(experiencePointsString);
+            heroAttributes.Level = (heroAttributes.ExperiencePoints / LevelMetric);
+            heroAttributes.Health = BaseHealth + (BaseHealth * heroAttributes.Level * LevelUpPercentage);
+            heroAttributes.AttackPower = BaseAttackPower + (BaseAttackPower * heroAttributes.Level * LevelUpPercentage);
+
+            Debug.Log(string.Format("Character loaded with attributes - HeroType: {0} Health: {1} Attack Power: {2} Current Exp: {3} Level: {4}",
+                heroType,
+                heroAttributes.Health,
+                heroAttributes.AttackPower,
+                heroAttributes.ExperiencePoints,
+                heroAttributes.Level
+            ));
         }
 
         public string GetHeroName()
@@ -121,6 +125,8 @@ namespace BattleRpg.Hero
         {
             heroRenderer.material = unselectedMaterial;
             heroCollider.enabled = true;
+
+            SetupHero();
         }
     }
 }
