@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
 using TMPro;
+using System.Collections;
 
 namespace BattleRpg.Battle
 {
@@ -36,8 +37,10 @@ namespace BattleRpg.Battle
         private List<Hero.Hero> alivebattleHeroes = new List<Hero.Hero>();
         private List<Hero.Hero> deadBattleHeroes = new List<Hero.Hero>();
         private Enemy.Enemy battleEnemy = null;
+        private Hero.Hero targetHero = null;
 
         private bool isEnemyTurn = false;
+        private bool isEnemyMoving = false;
         private bool isWin = false;
 
         private void Awake()
@@ -63,7 +66,7 @@ namespace BattleRpg.Battle
 
         private void Update()
         {
-            if (Input.GetButtonDown("Fire1") && !isEnemyTurn)
+            if (Input.GetButtonDown("Fire1") && !isEnemyTurn && !isEnemyMoving)
             {
                 // Try a raycast from screenpoint to check whether we hit anything.
                 Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
@@ -78,9 +81,27 @@ namespace BattleRpg.Battle
                 }
             }
 
-            if (isEnemyTurn)
+            if (isEnemyTurn && !isEnemyMoving && targetHero == null)
+            {
+                targetHero = alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)];
+                isEnemyMoving = true;
+            }
+            else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position != targetHero.transform.position)
+            {
+                PerformAnimation(battleEnemy.transform, targetHero.transform.position);
+            }
+            else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position == targetHero.transform.position)
             {
                 PerformEnemyAttack();
+                isEnemyTurn = false;
+            }
+            else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position != enemyPrefabReferencePosition.position)
+            {
+                PerformAnimation(battleEnemy.transform, enemyPrefabReferencePosition.position);
+            }
+            else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position == enemyPrefabReferencePosition.position)
+            {
+                isEnemyMoving = false;
             }
 
             if (battleEnemy.GetCurrentHealth() <= 0.0f && !battleEndUi.activeSelf)
@@ -169,8 +190,13 @@ namespace BattleRpg.Battle
 
         private void PerformEnemyAttack()
         {
-            alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)].DecreaseHealth(battleEnemy.GetCurrentAttackPower());
-            isEnemyTurn = false;
+            targetHero.DecreaseHealth(battleEnemy.GetCurrentAttackPower());
+            targetHero = null;
+        }
+
+        private void PerformAnimation(Transform lerpObject, Vector3 targetPosition)
+        {
+            lerpObject.position = Vector3.Lerp(lerpObject.position, targetPosition, Time.deltaTime * 10);
         }
 
         private void EndBattle()
