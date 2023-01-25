@@ -39,9 +39,14 @@ namespace BattleRpg.Enemy
             healthBar.value = 1.0f;
         }
 
+        public float GetCurrentHealth()
+        {
+            return enemyAttributes.Health;
+        }
+
         public float GetCurrentAttackPower()
         {
-            return enemyAttributes.AttackPower;
+            return 100;
         }
 
         public void DecreaseHealth(float value)

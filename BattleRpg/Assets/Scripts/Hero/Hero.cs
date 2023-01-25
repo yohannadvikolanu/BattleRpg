@@ -151,5 +151,11 @@ namespace BattleRpg.Hero
             Debug.Log("The health is now at " + heroAttributes.Health);
             healthBar.value -= value / 100;
         }
+
+        public void SetDeathState()
+        {
+            heroRenderer.material = lockedMaterial;
+            heroCollider.enabled = false;   
+        }
     }
 }

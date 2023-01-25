@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using BattleRpg.Player;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Linq;
+using TMPro;
 
 namespace BattleRpg.Battle
 {
@@ -24,10 +26,32 @@ namespace BattleRpg.Battle
         [SerializeField]
         private Transform enemyPrefabReferencePosition;
 
+        [SerializeField]
+        private GameObject battleEndUi = null;
+        [SerializeField]
+        private Button battleEndPopup = null;
+        [SerializeField]
+        private TMP_Text battleStatusText = null;
+
         private List<Hero.Hero> battleHeroes = new List<Hero.Hero>();
         private Enemy.Enemy battleEnemy = null;
 
         private bool isEnemyTurn = false;
+
+        private void Awake()
+        {
+            battleEndUi.SetActive(false);
+        }
+
+        private void OnEnable()
+        {
+            battleEndPopup.onClick.AddListener(EndBattle);
+        }
+
+        private void OnDisable()
+        {
+            battleEndPopup.onClick.RemoveListener(EndBattle);
+        }
 
         private void Start()
         {
@@ -55,6 +79,31 @@ namespace BattleRpg.Battle
             if (isEnemyTurn)
             {
                 PerformEnemyAttack();
+            }
+
+            if (battleEnemy.GetCurrentHealth() <= 0.0f && !battleEndUi.activeSelf)
+            {
+                battleStatusText.text = "YOU WON!";
+                battleEndUi.SetActive(true);
+            }
+
+            if (battleHeroes.Count > 0)
+            {
+                for (int i = 0; i < battleHeroes.Count; i++)
+                {
+                    if(battleHeroes[i].GetCurrentHealth() <= 0.0f)
+                    {
+                        battleHeroes[i].SetDeathState();
+                        battleHeroes.Remove(battleHeroes[i]);
+                        return;
+                    }
+                }
+            }
+
+            if (battleHeroes.Count == 0)
+            {
+                battleStatusText.text = "YOU LOST!";
+                battleEndUi.SetActive(true);
             }
         }
 
@@ -118,6 +167,11 @@ namespace BattleRpg.Battle
         {
             battleHeroes[UnityEngine.Random.Range(0, battleHeroes.Count)].DecreaseHealth(battleEnemy.GetCurrentAttackPower());
             isEnemyTurn = false;
+        }
+
+        private void EndBattle()
+        {
+            // TODO : Add logic to go back to the main scene
         }
     }
 }
