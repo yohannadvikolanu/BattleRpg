@@ -37,10 +37,11 @@ namespace BattleRpg.Hero
         private IHeroAttributes heroAttributes;
         private GameObject heroUiCanvas;
         private Slider healthBar;
+        private bool isInBattle = false;
+        private bool selected = false;
 
         // Public variables.
         public bool Selected { get { return selected; } }
-        private bool selected = false;
 
         private void Awake()
         {
@@ -59,7 +60,7 @@ namespace BattleRpg.Hero
         private void Update()
         {
             // If the hero is unlocked.
-            if (heroCollider.enabled)
+            if (!isInBattle && heroCollider.enabled)
             {
                 // Setting the scale to visualise selection on the menu screen.
                 if (selected)
@@ -104,6 +105,7 @@ namespace BattleRpg.Hero
                 heroCollider.enabled = true;
                 heroUiCanvas.SetActive(true);
                 healthBar.value = 1.0f;
+                isInBattle = true;
             }
         }
 

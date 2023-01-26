@@ -58,6 +58,8 @@ namespace BattleRpg.Battle
         private bool isEnemyMoving = false;
         private bool isPlayerTurn = false;
         private bool isPlayerMoving = false;
+        private bool performEnemyHurtAnimation = false;
+        private bool performHeroHurtAnimation = false;
         private bool isWin = false;
 
         private void Awake()
@@ -110,22 +112,23 @@ namespace BattleRpg.Battle
                 }
 
                 // Hero attack animation logic tree
-                if (isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position != heroAttackReferencePosition)
+                if (isPlayerTurn && isPlayerMoving && currentHero.transform.position != heroAttackReferencePosition)
                 {
                     // Move the current hero the attack position
                     PerformAnimation(currentHero.transform, heroAttackReferencePosition);
                 }
-                else if (isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position == heroAttackReferencePosition)
+                else if (isPlayerTurn && isPlayerMoving && currentHero.transform.position == heroAttackReferencePosition)
                 {
                     // Once move is done, perform the attack
                     PerformHeroAttack();
+                    performEnemyHurtAnimation = true;
                 }
-                else if (!isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position != currentHeroOriginalPosition)
+                else if (!isPlayerTurn && isPlayerMoving && currentHero.transform.position != currentHeroOriginalPosition)
                 {
                     // Return the current hero to the original position
                     PerformAnimation(currentHero.transform, currentHeroOriginalPosition);
                 }
-                else if (!isPlayerTurn && isPlayerMoving && currentHero != null && currentHero.transform.position == currentHeroOriginalPosition)
+                else if (!isPlayerTurn && isPlayerMoving && currentHero.transform.position == currentHeroOriginalPosition)
                 {
                     // Complete player turn and start enemy turn
                     isPlayerMoving = false;
@@ -133,25 +136,53 @@ namespace BattleRpg.Battle
                     turnText.text = EnemyTurnText;
                 }
 
+                if (performEnemyHurtAnimation && battleEnemy.transform.localScale != Vector3.one)
+                {
+                    PerformHurtAnimation(battleEnemy.transform, Vector3.one);
+                }
+                else if (performEnemyHurtAnimation && battleEnemy.transform.localScale == Vector3.one)
+                {
+                    performEnemyHurtAnimation = false;
+                }
+                else if (!performEnemyHurtAnimation && battleEnemy.transform.localScale != Vector3.one * 2.0f)
+                {
+                    PerformHurtAnimation(battleEnemy.transform, Vector3.one * 2.0f);
+                }
+
+                if (targetHero != null)
+                {
+                    if (performHeroHurtAnimation && targetHero.transform.localScale != Vector3.one * 0.5f)
+                    {
+                        PerformHurtAnimation(targetHero.transform, Vector3.one * 0.5f);
+                    }
+                    else if (performHeroHurtAnimation && targetHero.transform.localScale == Vector3.one * 0.5f)
+                    {
+                        performHeroHurtAnimation = false;
+                    }
+                    else if (!performHeroHurtAnimation && targetHero.transform.localScale != Vector3.one)
+                    {
+                        PerformHurtAnimation(targetHero.transform, Vector3.one);
+                    }
+                }
 
                 // Enemy attack animation logic tree
-                if (isEnemyTurn && !isEnemyMoving && targetHero == null)
+                if (isEnemyTurn && !isEnemyMoving)
                 {
                     // If it's the enemy's turn, set up required variables if they haven't been already
                     targetHero = alivebattleHeroes[UnityEngine.Random.Range(0, alivebattleHeroes.Count)];
                     enemyAttackReferencePosition = targetHero.transform.position + (Vector3.right * 2);
                     isEnemyMoving = true;
                 }
-                else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position != enemyAttackReferencePosition)
+                else if (isEnemyTurn && isEnemyMoving && battleEnemy.transform.position != enemyAttackReferencePosition)
                 {
                     // Move the enemy to the attack position
                     PerformAnimation(battleEnemy.transform, enemyAttackReferencePosition);
                 }
-                else if (isEnemyTurn && targetHero != null && battleEnemy.transform.position == enemyAttackReferencePosition)
+                else if (isEnemyTurn && isEnemyMoving && battleEnemy.transform.position == enemyAttackReferencePosition)
                 {
                     // Perform the attack logic on the selected hero
                     PerformEnemyAttack();
-                    isEnemyTurn = false;
+                    performHeroHurtAnimation = true;
                 }
                 else if (!isEnemyTurn && isEnemyMoving && battleEnemy.transform.position != enemyPrefabReferencePosition.position)
                 {
@@ -277,7 +308,7 @@ namespace BattleRpg.Battle
         private void PerformEnemyAttack()
         {
             targetHero.DecreaseHealth(battleEnemy.GetCurrentAttackPower());
-            targetHero = null;
+            isEnemyTurn = false;
         }
 
         /// <summary>
@@ -288,6 +319,11 @@ namespace BattleRpg.Battle
         private void PerformAnimation(Transform lerpObject, Vector3 targetPosition)
         {
             lerpObject.position = Vector3.Lerp(lerpObject.position, targetPosition, Time.deltaTime * 10);
+        }
+
+        private void PerformHurtAnimation(Transform lerpObject, Vector3 targetScale)
+        {
+            lerpObject.localScale = Vector3.Lerp(lerpObject.localScale, targetScale, Time.deltaTime * 30);
         }
 
         /// <summary>
