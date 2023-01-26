@@ -321,6 +321,11 @@ namespace BattleRpg.Battle
             lerpObject.position = Vector3.Lerp(lerpObject.position, targetPosition, Time.deltaTime * 10);
         }
 
+        /// <summary>
+        /// Used for animating the hero and enemy objects to depict a "hurt" effect.
+        /// </summary>
+        /// <param name="lerpObject"></param>
+        /// <param name="targetScale"></param>
         private void PerformHurtAnimation(Transform lerpObject, Vector3 targetScale)
         {
             lerpObject.localScale = Vector3.Lerp(lerpObject.localScale, targetScale, Time.deltaTime * 30);
